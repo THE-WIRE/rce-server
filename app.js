@@ -4,6 +4,11 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongo = require('mongodb');
+var monk = require('monk');
+
+var db = monk('mongodb://the-wire:Success%401996@ds227035.mlab.com:27035/rce-db');
+
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -42,5 +47,44 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+//Initialize global variables
+var t_users = [];
+var t_teams; // len(team_users)
+var team_users = [];
+
+/*
+team_users definition
+----------------------
+team_users = [
+  {
+    team_id : XYZ,
+    t_users : 2,
+    connected : 2
+  },
+  {
+    team_id : ABC,
+    t_users : 3,
+    connected : 2
+  }
+]
+
+t_users definition
+----------------------
+t_users = [
+  {
+    team_id : XYZ
+    user_id ; XXXX
+  }
+]
+*/
+
+//set global access
+app.set('db', db);
+app.set('t_users', t_users);
+app.set('t_teams', t_teams);
+app.set('team_users', team_users);
+
 
 module.exports = app;

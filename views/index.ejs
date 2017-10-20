@@ -8,4 +8,30 @@
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
   </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <script>
+      var socket = io.connect('http://localhost:3000');
+      var auth = io.connect('http://localhost:3000/auth');
+      // socket.on('connection', function(data){
+      //   console.log(data);
+      // })
+  // socket.on('news', function (data) {
+  //   console.log(data);
+    
+  // });
+  socket.emit('my other event', { my: 'data' });
+
+  
+  username = "suyg";
+  password = "skbsgdsd";
+  socket.emit('creds', {
+      username : username,
+      password: password
+  });
+
+  socket.on('confirm', function(data){
+      console.log(data);
+  })
+  </script>
 </html>
