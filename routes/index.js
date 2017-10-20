@@ -6,6 +6,7 @@ var btoa = require("btoa");
 router.get('/', function(req, res, next) {
   var io = req.app.get('io')
   var db = req.app.get('db')
+  var t_users = req.app.get('t_users')
   
   io.on('connection', function (socket) {
     socket.emit('init', { connected : true});
@@ -13,17 +14,31 @@ router.get('/', function(req, res, next) {
       console.log(data);
     });
 
+    
     socket.on('creds', function(data){
       console.log(data);
       //TODO : logic to connect to db and verify credentials
+      t_users.push(data);
+      socket.emit('t_users', { count: t_users.length});
+      console.log(t_users);
+      console.log("DB KJSKDJasd");
 
-      if(btoa("pass") == data.password){
-        console.log("Correct Pass");
-      }
-      else{
-        console.log("incorrect");
-      }
-      socket.emit('confirm', {p: "Authenticated Successfully!"});
+      const user = db.get('users')
+      user.find(data, function(d, err){
+        if(err) throw err
+        else {
+          console.log(d);
+          if((d[0].password) == data.password){
+            console.log("Correct Pass");
+
+          }
+          else{
+            console.log("incorrect");
+          }
+          socket.emit('confirm', {p: "Authenticated Successfully!"});
+        }
+
+      })
     })
 
     socket.on("disconnect", function(data){
@@ -32,6 +47,9 @@ router.get('/', function(req, res, next) {
   });
   res.render('index', { title: 'Express' });
 });
+
+
+
 
 // router.get('/auth', function(req, res, next) {
 //   var io = req.app.get('io');
