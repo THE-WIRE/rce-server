@@ -7,8 +7,7 @@ var bodyParser = require('body-parser');
 var mongo = require('mongodb');
 var monk = require('monk');
 
-var db = monk('mongodb://the-wire:Success%401996@ds227035.mlab.com:27035/rce-db');
-
+var db = monk('mongodb://the-wire:Success%401996@ds061076.mlab.com:61076/feed-db');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -50,7 +49,7 @@ app.use(function(err, req, res, next) {
 
 
 //Initialize global variables
-var t_users = [];
+var t_users = 0;
 var t_teams; // len(team_users)
 var team_users = [];
 

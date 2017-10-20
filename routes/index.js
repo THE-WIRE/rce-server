@@ -6,52 +6,50 @@ var btoa = require("btoa");
 router.get('/', function(req, res, next) {
   var io = req.app.get('io')
   var db = req.app.get('db')
+
   var t_users = req.app.get('t_users')
   
   io.on('connection', function (socket) {
+    t_users++;
+    console.log("T_USERS", t_users);
     socket.emit('init', { connected : true});
     socket.on('my other event', function (data) {
       console.log(data);
     });
 
-    
+    socket.emit('t_users', { count: t_users});
+    console.log("T_USERS", t_users);
     socket.on('creds', function(data){
       console.log(data);
       //TODO : logic to connect to db and verify credentials
-      t_users.push(data);
-      socket.emit('t_users', { count: t_users.length});
-      console.log(t_users);
-      console.log("DB KJSKDJasd");
+      const user = db.get('rce-user');
 
-      const user = db.get('users')
-      user.find(data, function(d, err){
-        if(err) throw err
-        else {
-          console.log(d);
-          if((d[0].password) == data.password){
-            console.log("Correct Pass");
-
-          }
+        user.find(data, function(err, data){
+          if(err) throw err
           else{
-            console.log("incorrect");
+            console.log(data);
+            socket.emit('confirm', {p: "Authenticated Successfully!"});
           }
-          socket.emit('confirm', {p: "Authenticated Successfully!"});
-        }
-
+        })
       })
+
+      socket.on("disconnect", function(data){
+        t_users--;
+        console.log("T_USERS", t_users);
+        socket.emit('t_users', { count: t_users});
+        console.log("Disconnected");
+      })
+
     })
 
-    socket.on("disconnect", function(data){
-      console.log("Disconnected");
-    })
-  });
+    
   res.render('index', { title: 'Express' });
 });
 
 
 
 
-// router.get('/auth', function(req, res, next) {
+router.get('/auth', function(req, res, next) {
 //   var io = req.app.get('io');
 
 //   io.on('connection', function(socket) {
@@ -69,7 +67,16 @@ router.get('/', function(req, res, next) {
 //   //     res.end();
 //   // })
 
-
-// })
+    // var db = req.app.get('db');
+    // const user = db.get('rce-user');
+    
+    // data = {
+    //   username : "suyog"
+    // }
+    // user.find(data, function(data, error){
+    //   console.log(error);
+    //   res.end();
+    // })
+})
 
 module.exports = router;
