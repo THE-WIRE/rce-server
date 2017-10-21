@@ -49,7 +49,7 @@ app.use(function(err, req, res, next) {
 
 
 //Initialize global variables
-var t_users = 0;
+var t_users = -1;
 var t_teams; // len(team_users)
 var team_users = [];
 

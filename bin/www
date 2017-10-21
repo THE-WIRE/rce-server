@@ -23,6 +23,11 @@ app.set('port', port);
 var server = http.createServer(app);
 var io = socket(server);
 
+io.on("t_users",function(data){
+  console.log("t user emitted :",data);
+})
+
+
 app.set('io', io);
 
 /**

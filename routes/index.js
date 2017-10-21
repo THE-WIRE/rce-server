@@ -8,6 +8,10 @@ router.get('/', function(req, res, next) {
   var db = req.app.get('db')
 
   var t_users = req.app.get('t_users')
+  io.sockets.on('t_users',function(data){
+    console.log("t_users emit :", data);
+  })
+  
   
   io.on('connection', function (socket) {
     t_users++;
@@ -17,7 +21,7 @@ router.get('/', function(req, res, next) {
       console.log(data);
     });
 
-    socket.emit('t_users', { count: t_users});
+    io.sockets.emit('t_users', { count: t_users});
     console.log("T_USERS", t_users);
     socket.on('creds', function(data){
       console.log(data);
@@ -36,12 +40,11 @@ router.get('/', function(req, res, next) {
       socket.on("disconnect", function(data){
         t_users--;
         console.log("T_USERS", t_users);
-        socket.emit('t_users', { count: t_users});
+        io.emit('t_users', { count: t_users});
         console.log("Disconnected");
       })
 
     })
-
     
   res.render('index', { title: 'Express' });
 });
